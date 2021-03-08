@@ -1,6 +1,10 @@
 from difflib import ndiff
 import argparse
+from Bio import pairwise2
+from Bio.Align import substitution_matrices
 
+
+#NON-PAIRWISE2 implementation. currently not being used
 def levenshtein_distance(seqA, seqB):
     distance = 0
     ops = {"+":0, "-":0}
@@ -16,6 +20,11 @@ def levenshtein_distance(seqA, seqB):
     distance += max(ops.values())
     return distance
 
+def distance(seqA,seqB):
+    alignments = pairwise2.align.globalms(seqA,seqB,0,-1,open=-1,extend=-1)
+    alignments.sort(key=lambda x:x.score)
+    return int(-alignments[0].score)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-a","--seq1",help="Sequence 1")
@@ -24,4 +33,4 @@ if __name__ == "__main__":
     if(args.seq1 == None or args.seq2 == None):
         parser.print_help()
     else:
-        print(levenshtein_distance(args.seq1,args.seq2))
+        print(distance(args.seq1,args.seq2))
